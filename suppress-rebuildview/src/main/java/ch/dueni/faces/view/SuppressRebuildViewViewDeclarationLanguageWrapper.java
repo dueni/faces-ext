@@ -58,7 +58,7 @@ public class SuppressRebuildViewViewDeclarationLanguageWrapper extends ViewDecla
 	@Override
 	public void buildView(FacesContext context, UIViewRoot root) throws IOException {
 		Map<Object, Object> attMap = context.getAttributes();
-		if (PhaseId.RENDER_RESPONSE != context.getCurrentPhaseId()
+		if (PhaseId.RENDER_RESPONSE == context.getCurrentPhaseId()
 				&& root == attMap.get(SuppressRebuildViewPhaseListener.RESTORED_VIEWROOT_KEY)
 				&& Boolean.TRUE.equals(attMap.get(SuppressRebuildViewPhaseListener.SUPPRESS_REBUILD_VIEW_KEY))) {
 
