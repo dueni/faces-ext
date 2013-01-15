@@ -40,8 +40,8 @@ import javax.faces.event.SystemEventListener;
  * @author hampidu@gmail.com
  * 
  */
-// TODO: system event listener registration does not work (verify with JSF 2.2
-// if it works) - use configuration to register this listener
+// TODO: system event listener registration does not work (verify if JSF 2.2 fixes this)
+// - use configuration to register this listener
 // @ListenerFor(systemEventClass = PreRenderViewEvent.class)
 public class PreRenderViewEventMediator implements SystemEventListener {
 

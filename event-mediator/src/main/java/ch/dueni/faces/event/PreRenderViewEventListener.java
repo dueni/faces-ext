@@ -16,15 +16,16 @@
 package ch.dueni.faces.event;
 
 import javax.faces.context.FacesContext;
+import javax.faces.event.PreRenderViewEvent;
 
 /**
  * Any class (including UIComponent subclasses) implementing
  * {@link PreRenderViewEventListener} may subscribe on
  * {@link PreRenderViewEventMediator#subscribe(PreRenderViewEventListener)} to
- * be notified before view rendering begins (PreRenderViewEvent on UIViewRoot) -
- * since PreRenderViewEvent is application scoped
- * {@link PreRenderViewEventMediator} is the single listener to mediate the
- * event to subscribed listeners.
+ * be notified before view rendering begins (PreRenderViewEvent on UIViewRoot).
+ * Since {@link PreRenderViewEvent} is application scoped
+ * {@link PreRenderViewEventMediator} is a single listener to mediate the
+ * event to subscribed listeners on request scope.
  * 
  * @author hampidu@gmail.com
  */
