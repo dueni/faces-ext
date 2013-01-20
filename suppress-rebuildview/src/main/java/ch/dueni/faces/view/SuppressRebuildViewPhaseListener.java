@@ -23,6 +23,7 @@ import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
 
 /**
+ *
  * <code>SuppressRebuildViewPhaseListener</code> can be used on views using
  * <code>&lt;f:phaseListener type="com.csg.jsf.view.SuppressRebuildViewPhaseListener" /&gt;</code>
  * on the page definition to signal to omit the second execution of buildView() in the
