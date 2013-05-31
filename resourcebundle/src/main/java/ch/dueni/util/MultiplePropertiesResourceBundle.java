@@ -102,7 +102,7 @@ import java.util.logging.Logger;
  * <p>
  * The load order of the properties files is base-named file first and then the additional 
  * properties files in natural sort order of the file name. Properties files loaded later may 
- * override properties of previously loaded properties.
+ * override previously loaded properties.
  * </p>
  * 
  * @author Hanspeter D&uuml;nnenberger
