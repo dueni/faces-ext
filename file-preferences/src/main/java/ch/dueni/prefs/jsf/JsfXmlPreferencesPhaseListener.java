@@ -1,4 +1,4 @@
-package ch.dueni.prefs;
+package ch.dueni.prefs.jsf;
 
 import java.util.prefs.PreferencesFactory;
 
@@ -6,6 +6,9 @@ import javax.faces.context.ExternalContext;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
+
+import ch.dueni.prefs.PreferencesContext;
+import ch.dueni.prefs.XmlFilePreferencesFactory;
 
 
 public class JsfXmlPreferencesPhaseListener implements PhaseListener {
