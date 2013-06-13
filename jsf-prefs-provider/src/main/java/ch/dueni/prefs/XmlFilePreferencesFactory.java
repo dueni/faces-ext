@@ -29,14 +29,14 @@ import java.util.prefs.PreferencesFactory;
  * @author hampidu@gmail.com
  * 
  */
-public class JsfXmlPreferencesFactory implements PreferencesFactory {
+public class XmlFilePreferencesFactory implements PreferencesFactory {
 
 	/**
 	 * Access systemRoot Preferences tree cached on application scope (ServletContext).
 	 */
 	@Override
 	public Preferences systemRoot() {
-		return JsfXmlPreferences.getSystemRoot();
+		return XmlFilePreferences.getSystemRoot();
 	}
 
 	/**
@@ -44,7 +44,7 @@ public class JsfXmlPreferencesFactory implements PreferencesFactory {
 	 */
 	@Override
 	public Preferences userRoot() {
-		return JsfXmlPreferences.getUserRoot();
+		return XmlFilePreferences.getUserRoot();
 	}
 
 }

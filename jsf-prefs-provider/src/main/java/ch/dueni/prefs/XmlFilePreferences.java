@@ -18,16 +18,13 @@ package ch.dueni.prefs;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.AbstractPreferences;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
 
 /**
  * <code>JsfXmlPreferences</code> implements {@link Preferences} handling systemRoot on application
@@ -36,17 +33,18 @@ import javax.servlet.ServletContext;
  * 
  * @author hampidu@gmail.com
  */
-public class JsfXmlPreferences extends AbstractPreferences {
+public class XmlFilePreferences extends AbstractPreferences {
 
-	public static final String SCOPE_KEY = JsfXmlPreferences.class.getName();
+	public static final String SCOPE_PREFERENCES_KEY = XmlFilePreferences.class.getName();
 
 	private Map<String, String> valueMap;
 
-	private Map<String, JsfXmlPreferences> childPrefs;
+	private Map<String, XmlFilePreferences> childPrefs;
 
 	private Root root;
 
 	private static final String FILE_NAME_PREFIX = "JsfXmlPreferences-";
+
 	private static final String FILE_NAME_SUFFIX = ".xml";
 
 	private static final String SERVLET_CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
@@ -55,7 +53,7 @@ public class JsfXmlPreferences extends AbstractPreferences {
 		system, user
 	}
 
-	protected JsfXmlPreferences(JsfXmlPreferences parent, String name) {
+	protected XmlFilePreferences(XmlFilePreferences parent, String name) {
 		super(parent, name);
 	}
 
@@ -87,7 +85,7 @@ public class JsfXmlPreferences extends AbstractPreferences {
 
 	@Override
 	protected void removeNodeSpi() throws BackingStoreException {
-		((JsfXmlPreferences) parent()).childPrefs.remove(this.name());
+		((XmlFilePreferences)parent()).childPrefs.remove(this.name());
 	}
 
 	@Override
@@ -109,11 +107,11 @@ public class JsfXmlPreferences extends AbstractPreferences {
 	@Override
 	protected AbstractPreferences childSpi(String name) {
 		if (childPrefs == null) {
-			childPrefs = new HashMap<String, JsfXmlPreferences>();
+			childPrefs = new HashMap<String, XmlFilePreferences>();
 		}
-		JsfXmlPreferences child = childPrefs.get(name);
+		XmlFilePreferences child = childPrefs.get(name);
 		if (child == null) {
-			child = new JsfXmlPreferences(this, name);
+			child = new XmlFilePreferences(this, name);
 			childPrefs.put(name, child);
 		}
 		return child;
@@ -121,6 +119,24 @@ public class JsfXmlPreferences extends AbstractPreferences {
 
 	@Override
 	public void sync() throws BackingStoreException {
+		XmlFilePreferences p = this;
+		while (p.parent() != null) {
+			p = (XmlFilePreferences)p.parent();
+		}
+		
+		PreferencesContext ctx = PreferencesContext.getCurrentInstance();
+
+		Root type = p.getRoot();
+		if (Root.user.equals(type)) {
+			Map<String, Object> sessionMap = ctx.getUserScope();
+			sessionMap.remove(SCOPE_PREFERENCES_KEY);
+			getUserRoot();
+		} else {
+			Map<String, Object> appScope = ctx.getAppScope();
+			appScope.remove(SCOPE_PREFERENCES_KEY);
+			getSystemRoot();
+		}
+
 	}
 
 	@Override
@@ -131,20 +147,20 @@ public class JsfXmlPreferences extends AbstractPreferences {
 
 	@Override
 	public void flush() throws BackingStoreException {
-		JsfXmlPreferences p = this;
+		XmlFilePreferences p = this;
 		while (p.parent() != null) {
-			p = (JsfXmlPreferences) p.parent();
+			p = (XmlFilePreferences)p.parent();
 		}
 		Root type = p.getRoot();
-		ExternalContext extCtx = getExternalContext();
-		storePreferencesTree(extCtx, type);
+		storePreferencesTree(type);
 	}
 
-	synchronized void storePreferencesTree(ExternalContext extCtx, Root root) {
+	synchronized void storePreferencesTree(Root root) {
 		try {
-			File storeFile = ensureStoreFile(extCtx, root);
-			JsfXmlPreferences prefs = Root.user == root ? JsfXmlPreferences.getUserRoot()
-					: JsfXmlPreferences.getSystemRoot();
+			PreferencesContext ctx = PreferencesContext.getCurrentInstance();
+			File storeFile = ensureStoreFile(ctx, root);
+			XmlFilePreferences prefs =
+					Root.user == root ? XmlFilePreferences.getUserRoot() : XmlFilePreferences.getSystemRoot();
 			if (!storeFile.canWrite()) {
 				storeFile.setWritable(true);
 				if (!storeFile.exists()) {
@@ -164,37 +180,35 @@ public class JsfXmlPreferences extends AbstractPreferences {
 				"Since this implementation manages full tree at once flush() method most be overridden!");
 	}
 
-	public static JsfXmlPreferences getSystemRoot() {
-		ExternalContext extCtx = getExternalContext();
-		Map<String, Object> appScope = extCtx.getApplicationMap();
-		JsfXmlPreferences systemRoot = (JsfXmlPreferences) appScope.get(SCOPE_KEY);
+	public static XmlFilePreferences getSystemRoot() {
+		PreferencesContext ctx = PreferencesContext.getCurrentInstance();
+		Map<String, Object> appScope = ctx.getAppScope();
+		XmlFilePreferences systemRoot = (XmlFilePreferences)appScope.get(SCOPE_PREFERENCES_KEY);
 		if (systemRoot == null) {
-			systemRoot = new JsfXmlPreferences(null, "");
-			appScope.put(SCOPE_KEY, systemRoot);
-			importPreferencesTree(extCtx, Root.system);
+			systemRoot = new XmlFilePreferences(null, "");
+			systemRoot.setRoot(Root.system);
+			appScope.put(SCOPE_PREFERENCES_KEY, systemRoot);
+			importPreferencesTree(ctx, Root.system);
 		}
 		return systemRoot;
 	}
 
-	private static ExternalContext getExternalContext() {
-		return FacesContext.getCurrentInstance().getExternalContext();
-	}
-
-	public static JsfXmlPreferences getUserRoot() {
-		ExternalContext extCtx = getExternalContext();
-		Map<String, Object> sessionMap = extCtx.getSessionMap();
-		JsfXmlPreferences userRoot = (JsfXmlPreferences) sessionMap.get(SCOPE_KEY);
+	public static XmlFilePreferences getUserRoot() {
+		PreferencesContext ctx = PreferencesContext.getCurrentInstance();
+		Map<String, Object> sessionMap = ctx.getUserScope();
+		XmlFilePreferences userRoot = (XmlFilePreferences)sessionMap.get(SCOPE_PREFERENCES_KEY);
 		if (userRoot == null) {
-			userRoot = new JsfXmlPreferences(null, "");
-			sessionMap.put(SCOPE_KEY, userRoot);
-			importPreferencesTree(extCtx, Root.user);
+			userRoot = new XmlFilePreferences(null, "");
+			userRoot.setRoot(Root.user);
+			sessionMap.put(SCOPE_PREFERENCES_KEY, userRoot);
+			importPreferencesTree(ctx, Root.user);
 		}
 		return userRoot;
 	}
 
-	static void importPreferencesTree(ExternalContext extCtx, Root root) {
+	static void importPreferencesTree(PreferencesContext ctx, Root root) {
 		try {
-			File storeFile = ensureStoreFile(extCtx, root);
+			File storeFile = ensureStoreFile(ctx, root);
 
 			if (storeFile.canRead()) {
 				InputStream in = new FileInputStream(storeFile);
@@ -205,22 +219,22 @@ public class JsfXmlPreferences extends AbstractPreferences {
 		}
 	}
 
-	private static File ensureStoreFile(ExternalContext extCtx, Root root) {
-		String prefsDir = WebXmlConfig.PersistenceDir.getValue();
-		File storeDir = null;
-		if (prefsDir == null) {
-			ServletContext servletContext = (ServletContext) extCtx.getContext();
-			File tempDir = (File) servletContext.getAttribute(SERVLET_CONTEXT_TEMPDIR);
-			storeDir = new File(tempDir, "prefs-store");
-		} else {
-			storeDir = new File(prefsDir, "prefs-store");
+	private static File ensureStoreFile(PreferencesContext ctx, Root root) {
+		String storePath = ctx.getStorePath();
+		if (storePath == null) {
+			try {
+				storePath = File.createTempFile("dummy", "txt").getParent();
+			} catch (IOException e) {
+				storePath = "/temp";
+			}
 		}
+		File storeDir = new File(storePath, "prefs-store");
 		if (!storeDir.exists()) {
 			storeDir.mkdirs();
 		}
 		String name = root.toString();
 		if (root == Root.user) {
-			name = name + "-" + extCtx.getRemoteUser();
+			name = name + "-" + ctx.getUserName();
 		}
 		String fileName = FILE_NAME_PREFIX + name + FILE_NAME_SUFFIX;
 		File xmlFile = new File(storeDir, fileName);
