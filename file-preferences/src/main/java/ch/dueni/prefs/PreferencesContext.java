@@ -1,5 +1,8 @@
 package ch.dueni.prefs;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class PreferencesContext {
@@ -18,6 +21,8 @@ public class PreferencesContext {
 
 	private String userName;
 
+	private List<XmlFilePreferences.Root> toSave; 
+	
 	public static PreferencesContext getCurrentInstance() {
 		PreferencesContext current = instance.get();
 		if (current == null) {
@@ -64,5 +69,21 @@ public class PreferencesContext {
 
 	public String getUserName() {
 		return userName;
+	}
+	
+	public void addToSave(XmlFilePreferences.Root rootTypeToSave) {
+		if (toSave == null) {
+			toSave = new ArrayList<XmlFilePreferences.Root>(2);
+		}
+		if (!toSave.contains(rootTypeToSave)) {
+			toSave.add(rootTypeToSave);
+		}
+	}
+	
+	public List<XmlFilePreferences.Root> getToSave() {
+		if (toSave == null) {
+			return Collections.emptyList();
+		}
+		return toSave;
 	}
 }

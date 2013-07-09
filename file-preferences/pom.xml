@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ch.dueni.jsf.ext</groupId>
 	<artifactId>file-preferences</artifactId>
-	<version>1.0</version>
+	<version>0.8</version>
 
 	<build>
 		<plugins>
@@ -17,6 +17,13 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-webdav</artifactId>
+				<version>1.0-beta-2</version>
+			</extension>
+		</extensions>
 	</build>
 
 	<dependencies>
@@ -33,4 +40,16 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+
+		<distributionManagement>
+			<repository>
+				<id>csjsf-release</id>
+				<url>http://artifacts.rowini.net:8081/nexus/content/repositories/csjsf-release/</url>
+			</repository>
+			<snapshotRepository>
+				<id>csjsf-snapshot</id>
+				<url>http://artifacts.rowini.net:8081/nexus/content/repositories/csjsf-snapshot/</url>
+			</snapshotRepository>
+		</distributionManagement>
+
 </project>

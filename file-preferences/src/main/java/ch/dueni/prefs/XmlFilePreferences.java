@@ -47,9 +47,7 @@ public class XmlFilePreferences extends AbstractPreferences {
 
 	private static final String FILE_NAME_SUFFIX = ".xml";
 
-	private static final String SERVLET_CONTEXT_TEMPDIR = "javax.servlet.context.tempdir";
-
-	private enum Root {
+	public enum Root {
 		system, user
 	}
 
@@ -80,7 +78,9 @@ public class XmlFilePreferences extends AbstractPreferences {
 
 	@Override
 	protected void removeSpi(String key) {
-		valueMap.remove(key);
+		if (valueMap != null) {
+			valueMap.remove(key);
+		}
 	}
 
 	@Override
@@ -123,10 +123,14 @@ public class XmlFilePreferences extends AbstractPreferences {
 		while (p.parent() != null) {
 			p = (XmlFilePreferences)p.parent();
 		}
-		
+
 		PreferencesContext ctx = PreferencesContext.getCurrentInstance();
 
 		Root type = p.getRoot();
+		if (ctx.getToSave().contains(type)) {
+			// flush() pending on this root, abort sync() to not lose not-yet saved changes 
+			return;
+		}
 		if (Root.user.equals(type)) {
 			Map<String, Object> sessionMap = ctx.getUserScope();
 			sessionMap.remove(SCOPE_PREFERENCES_KEY);
@@ -152,10 +156,11 @@ public class XmlFilePreferences extends AbstractPreferences {
 			p = (XmlFilePreferences)p.parent();
 		}
 		Root type = p.getRoot();
-		storePreferencesTree(type);
+		PreferencesContext.getCurrentInstance().addToSave(type);
+		//storePreferencesTree(type);
 	}
 
-	synchronized void storePreferencesTree(Root root) {
+	public synchronized static void storePreferencesTree(Root root) {
 		try {
 			PreferencesContext ctx = PreferencesContext.getCurrentInstance();
 			File storeFile = ensureStoreFile(ctx, root);
@@ -163,12 +168,12 @@ public class XmlFilePreferences extends AbstractPreferences {
 					Root.user == root ? XmlFilePreferences.getUserRoot() : XmlFilePreferences.getSystemRoot();
 			if (!storeFile.canWrite()) {
 				storeFile.setWritable(true);
-				if (!storeFile.exists()) {
-					storeFile.createNewFile();
-				}
-				FileOutputStream os = new FileOutputStream(storeFile);
-				prefs.exportSubtree(os);
 			}
+			if (!storeFile.exists()) {
+				storeFile.createNewFile();
+			}
+			FileOutputStream os = new FileOutputStream(storeFile);
+			prefs.exportSubtree(os);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
