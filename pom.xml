@@ -6,6 +6,22 @@
 	<packaging>pom</packaging>
 	<version>1.0</version>
 
+	<url>https://github.com/dueni/faces-ext.git</url>
+	<scm>
+		<connection>https://github.com/dueni/faces-ext.git</connection>
+		<developerConnection>https://github.com/dueni/faces-ext.git</developerConnection>
+		<url>https://github.com/dueni/faces-ext.git</url>
+	</scm>
+
+	<developers>
+		<developer>
+			<email>hampidu at gmail.com</email>
+			<id>dueni</id>
+			<name>Hanspeter D&uuml;nnenberger</name>
+			<timezone>CET</timezone>
+		</developer>
+	</developers>
+
 	<build>
 		<plugins>
 			<plugin>
