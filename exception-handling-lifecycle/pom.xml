@@ -1,23 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ch.dueni.jsf.ext</groupId>
+		<artifactId>master</artifactId>
+		<version>1.0</version>
+	</parent>
 	<groupId>ch.dueni.jsf12.ext</groupId>
 	<artifactId>exception-handling-lifecycle</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
-				<configuration>
-					<target>1.6</target>
-					<source>1.6</source>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+	<version>1.0-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
@@ -26,4 +17,5 @@
 			<version>1.2_15</version>
 		</dependency>
 	</dependencies>
+
 </project>
