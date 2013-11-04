@@ -43,15 +43,4 @@
 		</dependency>
 	</dependencies>
 
-		<distributionManagement>
-			<repository>
-				<id>csjsf-release</id>
-				<url>http://artifacts.rowini.net:8081/nexus/content/repositories/csjsf-release/</url>
-			</repository>
-			<snapshotRepository>
-				<id>csjsf-snapshot</id>
-				<url>http://artifacts.rowini.net:8081/nexus/content/repositories/csjsf-snapshot/</url>
-			</snapshotRepository>
-		</distributionManagement>
-
 </project>
