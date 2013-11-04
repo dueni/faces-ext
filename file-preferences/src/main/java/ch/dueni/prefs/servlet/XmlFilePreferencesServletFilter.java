@@ -13,7 +13,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import ch.dueni.prefs.PreferencesContext;
-import ch.dueni.prefs.XmlFilePreferences;
 import ch.dueni.prefs.XmlFilePreferencesFactory;
 
 public class XmlFilePreferencesServletFilter implements Filter {
@@ -50,11 +49,7 @@ public class XmlFilePreferencesServletFilter implements Filter {
 		// continue process request filter
 		chain.doFilter(request, response);
 
-		// store possibly changed preferences and reset PreferencesContext
-		for (XmlFilePreferences.Root root : prefsCtx.getToSave()) {
-			XmlFilePreferences.storePreferencesTree(root);
-		}
-		PreferencesContext.reset();
+		PreferencesContext.cleanup();
 	}
 
 	@Override

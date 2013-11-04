@@ -42,6 +42,9 @@ public class XmlFilePreferences extends AbstractPreferences {
 	private Map<String, XmlFilePreferences> childPrefs;
 
 	private Root root;
+	
+	// to trigger load on first access to childrenNamesSpi() or keysSpi() on Root Preferences this is set to true in setRoot() method 
+	private boolean loaded = true;  
 
 	private static final String FILE_NAME_PREFIX = "JsfXmlPreferences-";
 
@@ -55,8 +58,28 @@ public class XmlFilePreferences extends AbstractPreferences {
 		super(parent, name);
 	}
 
+	private void ensureLoadedSilent() {
+		if (root != null && !loaded) {
+			try {
+				// try to load preferences from file - may silently fail if there a
+				ensureLoaded();
+			} catch (BackingStoreException bse) {
+				bse.printStackTrace();
+			}
+		}
+	}
+
+ 	private void ensureLoaded() throws BackingStoreException {
+		if (!loaded) {
+			loaded = true;
+			PreferencesContext ctx = PreferencesContext.getCurrentInstance();
+			importPreferencesTree(ctx, getRoot());
+		}
+	}
+	
 	void setRoot(Root root) {
 		this.root = root;
+		loaded = false;
 	}
 
 	Root getRoot() {
@@ -73,6 +96,7 @@ public class XmlFilePreferences extends AbstractPreferences {
 
 	@Override
 	protected String getSpi(String key) {
+		ensureLoadedSilent();
 		return (valueMap == null) ? null : valueMap.get(key);
 	}
 
@@ -90,14 +114,22 @@ public class XmlFilePreferences extends AbstractPreferences {
 
 	@Override
 	protected String[] keysSpi() throws BackingStoreException {
+		ensureLoaded();
 		if (valueMap == null) {
 			return new String[0];
 		}
 		return valueMap.keySet().toArray(new String[0]);
 	}
+	
+	@Override
+	public Preferences node(String path) {
+		ensureLoadedSilent();
+		return super.node(path);
+	}
 
 	@Override
 	protected String[] childrenNamesSpi() throws BackingStoreException {
+		ensureLoaded();
 		if (childPrefs == null) {
 			return new String[0];
 		}
@@ -156,7 +188,13 @@ public class XmlFilePreferences extends AbstractPreferences {
 			p = (XmlFilePreferences)p.parent();
 		}
 		Root type = p.getRoot();
-		PreferencesContext.getCurrentInstance().addToSave(type);
+		// prevent load trigger - we are flushing now!
+		p.loaded = true;
+		PreferencesContext prefsCtx = PreferencesContext.getCurrentInstance();
+		if (!prefsCtx.isWritable()){
+			throw new BackingStoreException("access to backing store not possible!");
+		}
+		prefsCtx.addToSave(type);
 		//storePreferencesTree(type);
 	}
 
@@ -174,6 +212,8 @@ public class XmlFilePreferences extends AbstractPreferences {
 			}
 			FileOutputStream os = new FileOutputStream(storeFile);
 			prefs.exportSubtree(os);
+			os.flush();
+			os.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -193,7 +233,7 @@ public class XmlFilePreferences extends AbstractPreferences {
 			systemRoot = new XmlFilePreferences(null, "");
 			systemRoot.setRoot(Root.system);
 			appScope.put(SCOPE_PREFERENCES_KEY, systemRoot);
-			importPreferencesTree(ctx, Root.system);
+			//importPreferencesTree(ctx, Root.system);
 		}
 		return systemRoot;
 	}
@@ -206,12 +246,15 @@ public class XmlFilePreferences extends AbstractPreferences {
 			userRoot = new XmlFilePreferences(null, "");
 			userRoot.setRoot(Root.user);
 			sessionMap.put(SCOPE_PREFERENCES_KEY, userRoot);
-			importPreferencesTree(ctx, Root.user);
+			//importPreferencesTree(ctx, Root.user);
 		}
 		return userRoot;
 	}
 
-	static void importPreferencesTree(PreferencesContext ctx, Root root) {
+	static void importPreferencesTree(PreferencesContext ctx, Root root) throws BackingStoreException {
+		if (!ctx.isReadable()) {
+			throw new BackingStoreException("access to backing store not possible!");
+		}
 		try {
 			File storeFile = ensureStoreFile(ctx, root);
 
