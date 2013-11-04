@@ -1,108 +1,98 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>ch.dueni</groupId>
-    <artifactId>insight2jsf-posts</artifactId>
-    <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>jsf-tips Java EE 6 Webapp</name>
-    <url>http://maven.apache.org</url>
-    <repositories>
-        <repository>
-            <id>java.net2</id>
-            <name>Repository hosting the jee6 artifacts</name>
-            <url>http://download.java.net/maven/2</url>
-        </repository>
-    </repositories>
-    <dependencies>
-        <dependency>
-        	<groupId>com.sun.faces</groupId>
-        	<artifactId>jsf-api</artifactId>
-        	<version>2.1.22</version>
-        </dependency>
-        <dependency>
-        	<groupId>com.sun.faces</groupId>
-        	<artifactId>jsf-impl</artifactId>
-        	<version>2.1.22</version>
-        	<scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-        	<groupId>javax.el</groupId>
-        	<artifactId>el-api</artifactId>
-        	<version>2.2</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.easymock</groupId>
-        	<artifactId>easymock</artifactId>
-        	<version>3.1</version>
-        </dependency>
-    </dependencies>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>ch.dueni.jsf.ext</groupId>
+		<artifactId>master</artifactId>
+		<version>1.0</version>
+	</parent>
+	<artifactId>insight2jsf-posts</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0-SNAPSHOT</version>
+	<name>jsf-tips Java EE 6 Webapp</name>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.0.2</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1-beta-1</version>
-                <configuration>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                </configuration>
-            </plugin>
-        </plugins>
-        <finalName>jsf-tips</finalName>
-    </build>
-    <profiles>
-        <profile>
-            <id>endorsed</id>
-            <activation>
-                <property>
-                    <name>sun.boot.class.path</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>2.0.2</version>
-                        <configuration>
-                            <!-- javaee6 contains upgrades of APIs contained within the JDK itself.
-                                 As such these need to be placed on the bootclasspath, rather than classpath of the
-                                 compiler.
-                                 If you don't make use of these new updated API, you can delete the profile.
-                                 On non-SUN jdk, you will need to create a similar profile for your jdk, with the similar property as sun.boot.class.path in Sun's JDK.-->
-                            <compilerArguments>
-                                <bootclasspath>${settings.localRepository}/javax/javaee-endorsed-api/6.0/javaee-endorsed-api-6.0.jar${path.separator}${sun.boot.class.path}</bootclasspath>
-                            </compilerArguments>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>javax</groupId>
-                                <artifactId>javaee-endorsed-api</artifactId>
-                                <version>6.0</version>
-                            </dependency>
-                        </dependencies>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+	<repositories>
+		<repository>
+			<id>java.net2</id>
+			<name>Repository hosting the jee6 artifacts</name>
+			<url>http://download.java.net/maven/2</url>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-impl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<version>2.2.4</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.1-beta-1</version>
+				<configuration>
+					<failOnMissingWebXml>false</failOnMissingWebXml>
+				</configuration>
+			</plugin>
+		</plugins>
+		<finalName>jsf-tips</finalName>
+	</build>
+	<profiles>
+		<profile>
+			<id>endorsed</id>
+			<activation>
+				<property>
+					<name>sun.boot.class.path</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>2.0.2</version>
+						<configuration>
+							<!-- javaee6 contains upgrades of APIs contained within the JDK itself. 
+								As such these need to be placed on the bootclasspath, rather than classpath 
+								of the compiler. If you don't make use of these new updated API, you can 
+								delete the profile. On non-SUN jdk, you will need to create a similar profile 
+								for your jdk, with the similar property as sun.boot.class.path in Sun's JDK. -->
+							<compilerArguments>
+								<bootclasspath>${settings.localRepository}/javax/javaee-endorsed-api/6.0/javaee-endorsed-api-6.0.jar${path.separator}${sun.boot.class.path}</bootclasspath>
+							</compilerArguments>
+						</configuration>
+						<dependencies>
+							<dependency>
+								<groupId>javax</groupId>
+								<artifactId>javaee-endorsed-api</artifactId>
+								<version>6.0</version>
+							</dependency>
+						</dependencies>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
 
