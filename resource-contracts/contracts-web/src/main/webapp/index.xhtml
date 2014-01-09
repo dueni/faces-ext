@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html">
+
+<ui:composition template="/template.xhtml">
+
+	<ui:define name="content">
+		<h:link outcome="/user/index.xhtml">Go to</h:link> other contract
+                    
+                    <p />
+                    Look at WEB-INF/faces-config.xml for contract configuration.
+                    <p />
+		<p />
+                    Choose a template:<br />
+		<h:form>
+			<h:selectOneRadio value="#{contractsBean.contracts}"
+				layout="pageDirection" required="false">
+				<f:selectItem itemValue="#{null}" itemLabel="not-preset" />
+				<f:selectItem itemValue="base" itemLabel="base" />
+				<f:selectItem itemValue="red,base" itemLabel="red,base" />
+				<f:selectItem itemValue="blue,base" itemLabel="blue,base" />
+			</h:selectOneRadio>
+			<h:commandButton value="Apply" action="index" />
+		</h:form>
+	</ui:define>
+
+</ui:composition>
+</html>
