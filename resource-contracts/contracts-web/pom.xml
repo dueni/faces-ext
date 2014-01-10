@@ -12,13 +12,11 @@
 	<packaging>war</packaging>
 
 	<dependencies>
-		<!-- 
 		<dependency>
 			<artifactId>base-contract</artifactId>
 			<groupId>ch.dueni.jsf.contracts</groupId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-		 -->
 		<dependency>
 			<artifactId>blue-contract</artifactId>
 			<groupId>ch.dueni.jsf.contracts</groupId>

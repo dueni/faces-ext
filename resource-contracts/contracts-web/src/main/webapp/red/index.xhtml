@@ -3,13 +3,16 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:h="http://java.sun.com/jsf/html">
-<ui:composition template="/contracts/warbase/template.xhtml">
 
-	<ui:define name="top">
-		<h1>(JSF 2.2 Resource Library Contract) "red" template Header</h1>
+<ui:composition template="/template.xhtml">
+
+	<ui:define name="content">
+		<h:link outcome="/index.xhtml">Go to root index</h:link>
+
+		<p>Look at WEB-INF/faces-config.xml for contract configuration.</p>
+
 	</ui:define>
 
-	<ui:define name="content">Content ("red" template)</ui:define>
-
 </ui:composition>
+
 </html>

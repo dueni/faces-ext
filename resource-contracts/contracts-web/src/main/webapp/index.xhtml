@@ -8,22 +8,35 @@
 <ui:composition template="/template.xhtml">
 
 	<ui:define name="content">
-		<h:link outcome="/user/index.xhtml">Go to</h:link> other contract
-                    
-                    <p />
-                    Look at WEB-INF/faces-config.xml for contract configuration.
-                    <p />
-		<p />
-                    Choose a template:<br />
+		<ul>
+			<li>
+				<h:link outcome="/user/index.xhtml">Go to /user/index.xhtml</h:link>
+				contracts config resolves to "blue,warbase" unless user selected other contracts.
+			</li>
+			<li>
+				<h:link outcome="/red/index.xhtml">Go to /red/index.xhtml</h:link>
+				contracts config resolves to "red,warbase" unless user selected other contracts.
+			</li>
+			<li>
+				<h:link outcome="/green/index.xhtml">Go to /green/index.xhtml</h:link>
+				contracts config resolves to "green,jarbase" unless user selected other contracts.
+				"green" template.xhtml refers to template="/contracts/jarbase/template.xhtml" - that does not yet work!
+			</li>
+		</ul>
+
+		<h3>Choose a template:</h3>
 		<h:form>
 			<h:selectOneRadio value="#{contractsBean.contracts}"
-				layout="pageDirection" required="false">
-				<f:selectItem itemValue="#{null}" itemLabel="not-preset" />
-				<f:selectItem itemValue="base" itemLabel="base" />
-				<f:selectItem itemValue="red,base" itemLabel="red,base" />
-				<f:selectItem itemValue="blue,base" itemLabel="blue,base" />
+					layout="pageDirection" required="false">
+				<f:selectItem itemValue="" itemLabel="none preset" />
+				<f:selectItem itemValue="warbase" itemLabel="warbase" />
+				<f:selectItem itemValue="jarbase" itemLabel="jarbase" />
+				<f:selectItem itemValue="red,warbase" itemLabel="red,warbase" />
+				<f:selectItem itemValue="red,jarbase" itemLabel="red,jarbase" />
+				<f:selectItem itemValue="blue,warbase" itemLabel="blue,warbase" />
+				<f:selectItem itemValue="blue,jarbase" itemLabel="blue,jarbase" />
 			</h:selectOneRadio>
-			<h:commandButton value="Apply" action="index" />
+			<h:commandButton value="Apply" />
 		</h:form>
 	</ui:define>
 

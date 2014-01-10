@@ -4,17 +4,16 @@
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
         http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd"
 	version="2.2">
+	<!-- resource-library-contracts configuration works only with the new xml 
+		namespaces! -->
 
 	<application>
-        <resource-library-contracts>
-        	<!-- resource-library-contracts configuration works only with the new xml namespaces! -->
-            <contract-mapping>
-            		<display-name>red</display-name>
-                <!-- red depends on contract base -->
-                <url-pattern>*</url-pattern>
-                <contracts>red,base</contracts>
-            </contract-mapping>
-        </resource-library-contracts>
-    </application>
+		<resource-library-contracts>
+			<contract-mapping>
+				<url-pattern>/red/*</url-pattern>
+				<contracts>red,base</contracts>
+			</contract-mapping>
+		</resource-library-contracts>
+	</application>
 
 </faces-config>

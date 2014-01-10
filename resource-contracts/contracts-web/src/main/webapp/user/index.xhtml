@@ -8,9 +8,12 @@
 <ui:composition template="/template.xhtml">
 
 	<ui:define name="content">
-		<h:link outcome="/faces/index.xhtml">Go to</h:link> other contract.
-                <p>Look at WEB-INF/faces-config.xml for contract
-			configuration.</p>
+		<h:link outcome="/faces/index.xhtml">Go to /index.xhtml</h:link>
+
+		<p>
+			Header bar should have <span style="background-color: blue;">blue</span>
+			background color unless user activated other contracts.
+		</p>
 	</ui:define>
 
 </ui:composition>

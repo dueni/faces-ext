@@ -16,10 +16,6 @@ public class ContractsBean implements Serializable {
     }
 
     public void setContracts(String contracts) {
-    	if ("".equals(contracts)) {
-    		this.contracts = null;
-    	} else {
     		this.contracts = contracts;
-    	}
     }
 }

@@ -8,9 +8,8 @@
 	<application>
 		<resource-library-contracts>
 			<contract-mapping>
-				<display-name>base</display-name>
-				<url-pattern>/base/*</url-pattern>
-				<contracts>base</contracts>
+				<url-pattern>/green/*</url-pattern>
+				<contracts>green,jarbase</contracts>
 			</contract-mapping>
 		</resource-library-contracts>
 	</application>

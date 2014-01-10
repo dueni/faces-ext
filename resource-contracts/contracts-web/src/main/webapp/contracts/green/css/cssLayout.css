@@ -1,13 +1,13 @@
 #top {
     position: relative;
-    background-color: #eeeeee;
+    background-color: green;
     color: white;
     padding: 5px;
     margin: 0px 0px 10px 0px;
 }
 .center_content {
     position: relative;
-    background-color: #dddddd;
+    background-color: lightgreen;
     padding: 5px;
 }
 

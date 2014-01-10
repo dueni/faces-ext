@@ -50,7 +50,7 @@ public class ContractsFacesContext extends FacesContextWrapper {
 					ExpressionFactory elFactory = getApplication().getExpressionFactory();
 					ValueExpression ve = elFactory.createValueExpression(el, value, Object.class);
 					Object result = ve.getValue(el);
-					if (result instanceof String) {
+					if (result instanceof String && !((String)result).isEmpty()) {
 						String[] contracts = ((String) result).split(",");
 						getWrapped().setResourceLibraryContracts(Arrays.asList(contracts));
 					}
