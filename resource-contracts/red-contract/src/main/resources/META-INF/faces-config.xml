@@ -11,7 +11,7 @@
 		<resource-library-contracts>
 			<contract-mapping>
 				<url-pattern>/red/*</url-pattern>
-				<contracts>red,base</contracts>
+				<contracts>red,jarbase</contracts>
 			</contract-mapping>
 		</resource-library-contracts>
 	</application>
