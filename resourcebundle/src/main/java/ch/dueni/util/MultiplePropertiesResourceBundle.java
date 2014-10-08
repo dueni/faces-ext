@@ -18,15 +18,7 @@ package ch.dueni.util;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -61,7 +53,7 @@ import java.util.logging.Logger;
  * <p>
  * For each Locale that you need to support you also must provide Locale variants of your java
  * ResourceBindle class as shown below. Creating an empty subclass of the above class does the job -
- * the separate class is needed to let {@link ResourceBundle#getBundle(String, Locale)} find and
+ * the separate class is needed to let {@link java.util.ResourceBundle#getBundle(String, java.util.Locale)} find and
  * cache your bundle with the right Locale.
  * </p>
  * 
@@ -106,6 +98,17 @@ import java.util.logging.Logger;
  * </p>
  * 
  * @author Hanspeter D&uuml;nnenberger
+ *
+ * <p>
+ * Here was appended additional constructor which don't receive parameters if you would like to load
+ * ANY *.properties file which you define in resources folder you should extend this class with
+ * constructor without arguments. Then this class expects that it find one main (default) property
+ * file with name resources.properties but it load also any other .properties file from this
+ * folder without constraints of its name. Other features from this library will be still working.
+ * You can not use '.' and '_' in property file name because then filenames wrongly will parse
+ * and you'll receive NullPointerException while creating ResourceBandle.
+ * </p>
+ * @author Michał Rowicki
  */
 public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 
@@ -129,6 +132,13 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 	 * MultiplePropertiesResourceBundle.
 	 */
 	private Map<String, Object> combined;
+
+    /**
+     * Construct a <code>MultiplePropertiesResourceBundle</code> for the all properties.
+     */
+    protected MultiplePropertiesResourceBundle() {
+        this(null, "");
+    }
 
 	/**
 	 * Construct a <code>MultiplePropertiesResourceBundle</code> for the passed in base-name.
@@ -179,7 +189,7 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 
 			List<String> bundleNames = findBaseNames(baseName);
 			for (String bundleName : bundleNames) {
-				ResourceBundle bundle = ResourceBundle.getBundle(bundleName, getLocale());
+				ResourceBundle bundle = ResourceBundle.getBundle(bundleName, getLocale(), new UTF8Control());
 				Enumeration<String> keys = bundle.getKeys();
 				String key = null;
 				while (keys.hasMoreElements()) {
@@ -205,7 +215,8 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 		ClassLoader cl = Thread.currentThread().getContextClassLoader();
 		List<String> bundleNames = new ArrayList<String>();
 		try {
-			String baseFileName = baseName + ".properties";
+			String baseFileName = getBaseName(baseName) + ".properties";
+			String endFileName = baseName + ".properties";
 			String resourcePath = getResourcePath();
 			String resourceName = resourcePath + baseFileName;
 			if (isLoggable) {
@@ -227,7 +238,7 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 					for (Enumeration<JarEntry> entries = jar.entries(); entries.hasMoreElements();) {
 						JarEntry entry = entries.nextElement();
 						String name = entry.getName();
-						addMatchingNameOnce("", baseName, bundleNames, baseFileName, name);
+						addMatchingNameOnce("", baseName, bundleNames, endFileName, name);
 					}
 					jar.close();
 				} else {
@@ -235,7 +246,7 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 					dir = dir.getParentFile();
 					if (dir.isDirectory()) {
 						for (String name : dir.list()) {
-							addMatchingNameOnce(resourcePath, baseName, bundleNames, baseFileName, name);
+							addMatchingNameOnce(resourcePath, baseName, bundleNames, endFileName, name);
 						}
 					}
 				}
@@ -247,9 +258,9 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 
 			public int compare(String o1, String o2) {
 				int rc = 0;
-				if (baseName.equals(o1)) {
+				if (getBaseName(baseName).equals(o1)) {
 					rc = -1;
-				} else if (baseName.equals(o2)) {
+				} else if (getBaseName(baseName).equals(o2)) {
 					rc = 1;
 				} else {
 					rc = o1.compareTo(o2);
@@ -264,7 +275,15 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 		return bundleNames;
 	}
 
-	private String getResourcePath() {
+    private String getBaseName(String baseName) {
+        if (baseName.isEmpty()) {
+            return "resources";
+        } else {
+            return baseName;
+        }
+    }
+
+    private String getResourcePath() {
 		String result = "";
 		if (packageName != null) {
 			result = packageName.replaceAll("\\.", "/") + "/";
@@ -274,7 +293,15 @@ public abstract class MultiplePropertiesResourceBundle extends ResourceBundle {
 
 	private void addMatchingNameOnce(String resourcePath, String baseName, List<String> bundleNames,
 			String baseFileName, String name) {
-		int prefixed = name.indexOf(baseName);
+		int prefixed;
+        if (baseName.isEmpty()) {
+            prefixed = name.indexOf("_");
+            if (prefixed == -1) {
+                prefixed = name.indexOf(".");
+            }
+        } else {
+            prefixed = name.indexOf(baseName);
+        }
 		if (prefixed > -1 && name.endsWith(baseFileName)) {
 			String toAdd = resourcePath + name.substring(0, prefixed) + baseName;
 			if (!bundleNames.contains(toAdd)) {
