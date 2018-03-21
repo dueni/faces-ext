@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class MutliResourceBundleTest {
+public class MultiResourceBundleTest {
 	
 	@Test
 	public void resourcesCombined() {
